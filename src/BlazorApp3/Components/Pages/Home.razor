@@ -1,0 +1,53 @@
+@page "/"
+@using ObsStrawket
+@using ObsStrawket.DataTypes
+@using ObsStrawket.DataTypes.Predefineds
+
+<PageTitle>Home</PageTitle>
+
+@InputAudioBalanceChanged
+
+@foreach (var item in Events)
+{
+    @item
+    <br />
+})
+
+
+@code{
+    IEnumerable<string> Events = [];
+
+    private string Text = "Hello World";
+
+    string InputAudioBalanceChanged;
+
+    [Inject]
+    ObsClientSocket socket { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await socket.ConnectAsync(
+            new Uri("ws://localhost:4455"),
+            "oJIJCzv5hkYfL8IU",
+            EventSubscription.InputVolumeMeters | EventSubscription.All 
+        );
+
+        var version = await socket.GetVersionAsync();
+
+        socket.Event += changed =>
+        {
+            Events = Events.Append(changed.EventType);
+            InvokeAsync(() => StateHasChanged());
+        };
+
+        socket.InputVolumeMeters += changed =>
+        {
+            InputAudioBalanceChanged = changed.ToString();
+            InvokeAsync(() => StateHasChanged());
+        };
+
+        var re1 = await socket.GetInputListAsync();
+        var re2 = await socket.GetInputVolumeAsync(re1.Inputs[0].Name);
+
+    }
+}
