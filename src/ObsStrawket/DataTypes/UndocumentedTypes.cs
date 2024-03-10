@@ -125,7 +125,7 @@ namespace ObsStrawket.DataTypes {
     [Key("inputUuid")]
     public string Uuid { get; set; } = "";
     [Key("inputLevelsMul")]
-    public float[][] Level { get; set; } = Array.Empty<float[]>(new float[] {0.0, 0.0, 0.0} );
+    public float[][] Level { get; set; } = Array.Empty<float[]>();
 
   }
 
